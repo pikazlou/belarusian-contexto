@@ -4,6 +4,8 @@ curl -X GET -G "https://j8t13egmj6.execute-api.us-east-1.amazonaws.com/prod/word
 ```
 
 ### Create new game with the specified word as the one to guess
+*Potentially costly operation, so currently disabled via public API. Invoking directly on lambda.* 
+
 word - the word to guess in the game
 
 game - the name of the game, must be unique
