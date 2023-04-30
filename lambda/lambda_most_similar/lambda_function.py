@@ -1,22 +1,13 @@
 import json
-import boto3
-from utils import parse_word2vec_format, words_by_distance
-
-EMBEDDING_BUCKET = 'belarus-embedding'
-EMBEDDING_OBJECT = 'word2vec-100-bel-cc100.vectors'
-EMBEDDING_LOCAL_FILE = '/tmp/embeddings'
-
-s3 = boto3.resource('s3')
+from utils import words_by_distance
+from cloud_specific_operations import get_embeddings
 
 
 def lambda_handler(event, context):
-    s3.Bucket(EMBEDDING_BUCKET).download_file(EMBEDDING_OBJECT, EMBEDDING_LOCAL_FILE)
     print(event)
-    with open(EMBEDDING_LOCAL_FILE) as file:
-        emb = parse_word2vec_format(file)
-    query_params = event.get('queryStringParameters')
-    query_params = {} if query_params is None else query_params
-    words = words_by_distance(emb, query_params.get('word', 'ABSENT'))
+    word = event['queryStringParameters']['word']
+    emb = get_embeddings()
+    words = words_by_distance(emb, word)
     print(words[:10])
     return {
         'statusCode': 200,
