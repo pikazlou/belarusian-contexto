@@ -9,3 +9,18 @@ def get_embeddings():
     with open(embedding_local_file) as file:
         emb = parse_word2vec_format(file)
     return emb
+
+
+def put_words_order_for_game(game: str, words: list[str]):
+    pk = f'GAME#{game}'
+    db = boto3.resource('dynamodb', region_name='us-east-1')
+    table = db.Table('belarusian-contexto')
+    with table.batch_writer() as batch:
+        for index, word in enumerate(words):
+            batch.put_item(
+                Item={
+                    'pk': pk,
+                    'sk': word,
+                    'rank': index,
+                }
+            )
