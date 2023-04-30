@@ -1,4 +1,4 @@
-for lambda in contextoLambdaCreateGame contextoLambdaMostSimilarWords
+for lambda in contextoLambdaCreateGame contextoLambdaMostSimilarWords contextoLambdaGuessTheWord
 do
   (
   zip -j deployment-package.zip $lambda/lambda_function.py cloud_specific_operations.py utils.py

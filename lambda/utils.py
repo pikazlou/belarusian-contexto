@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def parse_word2vec_format(lines_it: iter):
+def parse_word2vec_format(lines_it: iter) -> dict:
     result = {}
-    next(lines_it) #skip word2vec header (<number of words> <embedding dimensionality>)
+    next(lines_it)  # skip word2vec header (<number of words> <embedding dimensionality>)
     for line in lines_it:
         tokens = line.split()
         word = tokens[0]
@@ -12,7 +12,7 @@ def parse_word2vec_format(lines_it: iter):
     return result
 
 
-def words_by_distance(embeddings: dict, word: str):
+def words_by_distance(embeddings: dict, word: str) -> list:
     if word not in embeddings:
         return []
     word_emb = embeddings[word]
@@ -21,5 +21,5 @@ def words_by_distance(embeddings: dict, word: str):
     return [w[0] for w in sorted_words_with_distances]
 
 
-def cos_similarity(vec1: np.ndarray, vec2: np.ndarray):
+def cos_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
     return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
