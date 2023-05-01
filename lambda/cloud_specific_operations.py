@@ -26,7 +26,7 @@ def put_words_order_for_game(game: str, words: list[str]) -> None:
             )
 
 
-def get_word_rank(game: str, word: str) -> int:
+def get_rank_by_word(game: str, word: str) -> int:
     pk = f'GAME#{game}'
     db = boto3.resource('dynamodb', region_name='us-east-1')
     table = db.Table('belarusian-contexto')
@@ -39,3 +39,25 @@ def get_word_rank(game: str, word: str) -> int:
     if response.get('Item') is None or response.get('Item').get('rank') is None:
         return -1
     return response['Item']['rank']
+
+
+def get_word_by_rank(game: str, rank: int) -> str:
+    pk = f'GAME#{game}'
+    db = boto3.resource('dynamodb', region_name='us-east-1')
+    table = db.Table('belarusian-contexto')
+    response = table.query(
+        IndexName='rank',
+        KeyConditionExpression='pk = :pk and #rank_attr = :rank',
+        ExpressionAttributeNames={
+            '#rank_attr': 'rank'
+        },
+        ExpressionAttributeValues={
+            ':pk': pk,
+            ':rank': rank
+        }
+    )
+    items = response['Items']
+    if len(items) == 0:
+        return ''
+    return items[0]['sk']
+

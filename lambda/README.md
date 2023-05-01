@@ -3,6 +3,8 @@ API gateway is used with proxy integration to lambda.
 
 For numpy dependency default AWS layer `AWSSDKPandas-Python39` is used (I've tried including numpy directly ito ZIP as described in [AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html), section `Deployment package with dependencies`, but it didn't work).
 
+Don't forget to give lambda permissions to access DynamoDB.
+
 To deploy lambdas you have to use AWS CLI profile with corresponding permissions.
 
 ### Getting words in the order of similarity to specified one
