@@ -26,3 +26,9 @@ curl -X POST -G "https://j8t13egmj6.execute-api.us-east-1.amazonaws.com/prod/gam
 ```commandline
 curl -X GET -G "https://j8t13egmj6.execute-api.us-east-1.amazonaws.com/prod/games/test2/rank" --data-urlencode "word=чалавек"
 ```
+
+### Getting hint about next word
+word - the highest ranked word you have guessed so far, the endpoint will return a word higher than that
+```commandline
+curl -X GET -G "https://j8t13egmj6.execute-api.us-east-1.amazonaws.com/prod/games/test2/hint" --data-urlencode "word=чалавек"
+```
