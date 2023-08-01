@@ -6,7 +6,7 @@ $(document).ready(function(){
 
     $('#answer').on('keypress', function (e) {
          if(e.which === 13){
-            var answer = $(this).val();
+            var answer = $(this).val().toLowerCase();
             submit_answer(game_id, answer);
          }
     });
