@@ -2,15 +2,19 @@ import sys
 import json
 import hashlib
 import numpy as np
-from flask import Flask
+from flask import Flask, request
 from waitress import serve
 from gensim.models import KeyedVectors
 
 app = Flask(__name__)
 
 
-@app.route('/game/<game_id>/guess/<word>')
-def guess_word(game_id, word):
+@app.route('/guess', methods=['POST'])
+def guess_word():
+    game_id, word = get_game_id_and_word()
+    if not (game_id and word):
+        return json.dumps({'message': 'Missing game_id or word in request body'}), 400
+
     rank = -1
     top_words = []
     target = get_target_word(game_id)
@@ -23,8 +27,12 @@ def guess_word(game_id, word):
     return json.dumps({'rank1': rank, 'top_words': top_words}, ensure_ascii=False)
 
 
-@app.route('/game/<game_id>/hint/<word>')
-def hint(game_id, word):
+@app.route('/hint', methods=['POST'])
+def hint():
+    game_id, word = get_game_id_and_word()
+    if not (game_id and word):
+        return json.dumps({'message': 'Missing game_id or word in request body'}), 400
+
     target = get_target_word(game_id)
     hint_rank = -1
     hint_word = ''
@@ -37,6 +45,16 @@ def hint(game_id, word):
             hint_rank = rank
             hint_word = word
     return json.dumps({'rank': hint_rank, 'word': hint_word}, ensure_ascii=False)
+
+
+def get_game_id_and_word():
+    body = request.json
+    if not ('game_id' in body and 'word' in body):
+        return '', ''
+
+    game_id = str(body['game_id'])
+    word = str(body['word'])
+    return game_id, word
 
 
 def get_target_word(game_id: str):
