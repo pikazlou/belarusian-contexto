@@ -35,9 +35,16 @@ function guess_response(data) {
     total_words = data['total_words']
 
     if (rank >= 0) {
-        guessed_words.push({"word": word, "rank": rank})
-        guessed_words.sort(function(a, b){return a.rank - b.rank});
+        same_word = guessed_words.find(function(elem) { return elem.word == word; });
+        word_exists = typeof same_word !== 'undefined';
+        if (!word_exists) {
+            guessed_words.push({"word": word, "rank": rank})
+            guessed_words.sort(function(a, b){return a.rank - b.rank});
+        }
         render_guessed_rows(total_words, word);
+        if (word_exists) {
+            $("#status").text("Слова ўжо было");
+        }
         if (rank == 0) {
             $("#status").html("Віншуем! Сакрэтнае слова <b>" + word + "</b>");
         }
