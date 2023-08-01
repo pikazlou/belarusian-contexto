@@ -17,6 +17,7 @@ def guess_word():
 
     rank = -1
     top_words = []
+    total_words = len(w2v.index_to_key)
     target = get_target_word(game_id)
     if word == target:
         rank = 0
@@ -24,7 +25,7 @@ def guess_word():
     else:
         if word in w2v:
             rank = w2v.rank(target, word)
-    return json.dumps({'rank': rank, 'word': word, 'top_words': top_words}, ensure_ascii=False)
+    return json.dumps({'rank': rank, 'word': word, 'total_words': total_words, 'top_words': top_words}, ensure_ascii=False)
 
 
 @app.route('/hint', methods=['POST'])
@@ -33,9 +34,10 @@ def hint():
     if not (game_id and word):
         return json.dumps({'message': 'Missing game_id or word in request body'}), 400
 
-    target = get_target_word(game_id)
     hint_rank = -1
     hint_word = ''
+    total_words = len(w2v.index_to_key)
+    target = get_target_word(game_id)
     if word in w2v:
         rank = w2v.rank(target, word)
         if rank > 2:
@@ -44,7 +46,7 @@ def hint():
         else:
             hint_rank = rank
             hint_word = word
-    return json.dumps({'rank': hint_rank, 'word': hint_word, 'top_words': []}, ensure_ascii=False)
+    return json.dumps({'rank': hint_rank, 'word': hint_word, 'total_words': total_words, 'top_words': []}, ensure_ascii=False)
 
 
 def get_game_id_and_word():
