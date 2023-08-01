@@ -1,5 +1,3 @@
-var api_host = "http://ec2-3-66-198-236.eu-central-1.compute.amazonaws.com:8000"
-
 $(document).ready(function(){
     var today = new Date();
     var game_id = today.toISOString().slice(0, 10)
