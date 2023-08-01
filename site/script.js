@@ -1,31 +1,30 @@
 var api_host = "http://ec2-3-66-198-236.eu-central-1.compute.amazonaws.com:8000"
 
 $(document).ready(function(){
+    var today = new Date();
+    var game_id = today.toISOString().slice(0, 10)
+
+    $('#game_id').text("Код гульні: " + game_id)
+
     $('#answer').on('keypress', function (e) {
          if(e.which === 13){
             var answer = $(this).val();
-            submit_answer(answer);
+            submit_answer(game_id, answer);
          }
     });
 });
 
-function submit_answer(answer) {
-    var today = new Date();
-    var todayIso = today.toISOString().slice(0, 10)
+function submit_answer(game_id, answer) {
+    $("#status").text("Чакаем...");
 
-    var total_words = 22334
-    var rank = Math.floor(Math.random() * 22334);
-
-    guess_response({'rank': rank, 'word': answer, 'total_words': total_words})
-    //alert(todayIso);
-//    $.ajax({
-//        type: 'POST',
-//        url: api_host + '/guess',
-//        data: '{"name":"jonas"}', // or JSON.stringify ({name: 'jonas'}),
-//        success: function(data) { alert('data: ' + data); },
-//        contentType: "application/json",
-//        dataType: 'json'
-//    });
+    $.ajax({
+        type: 'POST',
+        url: '/guess',
+        data: JSON.stringify ({game_id: game_id, word: answer}),
+        success: guess_response,
+        contentType: "application/json",
+        dataType: 'json'
+    });
 }
 
 var guessed_words = []
@@ -34,9 +33,14 @@ function guess_response(data) {
     word = data['word']
     top_words = data['top_words']
     total_words = data['total_words']
-    guessed_words.push({"word": word, "rank": rank})
-    guessed_words.sort(function(a, b){return a.rank - b.rank});
-    render_guessed_rows(total_words, word);
+
+    if (rank >= 0) {
+        guessed_words.push({"word": word, "rank": rank})
+        guessed_words.sort(function(a, b){return a.rank - b.rank});
+        render_guessed_rows(total_words, word);
+    } else {
+        $("#status").text("Невядомае слова");
+    }
 }
 
 function render_guessed_rows(total_words, current_word) {
@@ -68,6 +72,7 @@ function render_guessed_row(word, rank, total_words, highlighted) {
     $(".progress_bar", clone).css("background-color", progress_color);
     if (highlighted) {
         $(".guessed_row", clone).css("border", "3px solid black");
+        $("#status").html(clone.clone());
     }
     $("#guessed_template").before(clone);
 }
