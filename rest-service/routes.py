@@ -24,7 +24,7 @@ def guess_word():
     else:
         if word in w2v:
             rank = w2v.rank(target, word)
-    return json.dumps({'rank1': rank, 'top_words': top_words}, ensure_ascii=False)
+    return json.dumps({'rank': rank, 'word': word, 'top_words': top_words}, ensure_ascii=False)
 
 
 @app.route('/hint', methods=['POST'])
@@ -44,7 +44,7 @@ def hint():
         else:
             hint_rank = rank
             hint_word = word
-    return json.dumps({'rank': hint_rank, 'word': hint_word}, ensure_ascii=False)
+    return json.dumps({'rank': hint_rank, 'word': hint_word, 'top_words': []}, ensure_ascii=False)
 
 
 def get_game_id_and_word():
@@ -65,9 +65,11 @@ def get_target_word(game_id: str):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print('expected CLI paramater - path to word2vec vectors file')
         sys.exit(1)
     w2v = KeyedVectors.load_word2vec_format(sys.argv[1])
-    serve(app, host="0.0.0.0", port=8000)
-    #app.run(debug=True)
+    if len(sys.argv) == 3:
+        app.run(debug=True, port=8000)
+    else:
+        serve(app, host="0.0.0.0", port=8000)
