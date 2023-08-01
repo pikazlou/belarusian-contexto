@@ -2,11 +2,22 @@ import sys
 import json
 import hashlib
 import numpy as np
-from flask import Flask, request
+from flask import Flask, request, send_from_directory, redirect
 from waitress import serve
 from gensim.models import KeyedVectors
 
 app = Flask(__name__)
+
+
+@app.route('/')
+def root():
+    return redirect('index.html')
+
+
+@app.route('/<path:path>')
+def send_report(path):
+    print(path)
+    return send_from_directory('../site', path)
 
 
 @app.route('/guess', methods=['POST'])
