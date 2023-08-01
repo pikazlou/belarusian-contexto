@@ -38,6 +38,9 @@ function guess_response(data) {
         guessed_words.push({"word": word, "rank": rank})
         guessed_words.sort(function(a, b){return a.rank - b.rank});
         render_guessed_rows(total_words, word);
+        if (rank == 0) {
+            $("#status").html("Віншуем! Сакрэтнае слова <b>" + word + "</b>");
+        }
     } else {
         $("#status").text("Невядомае слова");
     }
@@ -59,7 +62,9 @@ function render_guessed_row(word, rank, total_words, highlighted) {
     var percent = 100.0 * (1.0 - current / max);
 
     var progress_color = '#dd8888'
-    if (percent > 50.0) {
+    if (rank == 0) {
+        progress_color = '#bbffbb'
+    } else if (percent > 50.0) {
         progress_color = '#aaddaa'
     } else if (percent > 25.0) {
         progress_color = '#eecc66'
