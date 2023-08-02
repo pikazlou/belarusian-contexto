@@ -8,6 +8,7 @@ $(document).ready(function(){
          if(e.which === 13){
             var answer = $(this).val().toLowerCase();
             submit_answer(game_id, answer);
+            $('#answer').val('');
          }
     });
 });
