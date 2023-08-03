@@ -1,7 +1,9 @@
 import sys
 import json
 import hashlib
+from time import strftime
 import logging
+from logging.handlers import RotatingFileHandler
 import numpy as np
 from flask import Flask, request, send_from_directory, redirect
 from waitress import serve
@@ -11,9 +13,11 @@ app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
 
-@app.before_request
-def log_request():
-    app.logger.info('=== Headers: %s Body: %s', request.headers, request.get_data())
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
+    logger.info('<TS>:%s <REM>:%s <HD>:%s <BODY>:%s <RS>:%s <RSBODY>:%s', timestamp, request.remote_addr, request.headers, request.get_data(), response.status, response.get_data())
+    return response
 
 
 @app.route('/')
@@ -89,6 +93,10 @@ if __name__ == "__main__":
         print('expected CLI paramater - path to word2vec vectors file')
         sys.exit(1)
     w2v = KeyedVectors.load_word2vec_format(sys.argv[1])
+    handler = RotatingFileHandler('app.log', maxBytes=100000, backupCount=3)
+    logger = logging.getLogger('tdm')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
     if len(sys.argv) == 3:
         app.run(debug=True, port=8000)
     else:
