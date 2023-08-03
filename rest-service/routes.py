@@ -34,14 +34,14 @@ def guess_word():
     target = get_target_word(game_id)
     if word == target:
         rank = 0
-        top_words = w2v.most_similar(target, topn=50)
+        top_words = [w for w, _ in w2v.most_similar(target, topn=50)]
     else:
         if word in w2v:
             rank = w2v.rank(target, word)
 
     timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
-    logger.info('%s <game id>:%s <word>:%s <rank>:%s <total words>:%s', timestamp, game_id, word, rank,
-                total_words)
+    logger.info('%s <game id>:%s <word>:%s <rank>:%s <total words>:%s <top words>:%s', timestamp, game_id, word, rank,
+                total_words, top_words)
 
     return json.dumps({'rank': rank, 'word': word, 'total_words': total_words, 'top_words': top_words}, ensure_ascii=False)
 
