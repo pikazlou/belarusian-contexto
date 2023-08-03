@@ -10,15 +10,6 @@ from waitress import serve
 from gensim.models import KeyedVectors
 
 app = Flask(__name__)
-app.logger.setLevel(logging.INFO)
-
-
-@app.after_request
-def after_request(response):
-    timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
-    logger.info('<TS>:%s <REM>:%s <HD>:%s <BODY>:%s <RS>:%s <RSBODY>:%s', timestamp, request.remote_addr, request.headers, request.get_data(), response.status, response.get_data())
-    return response
-
 
 @app.route('/')
 def root():
@@ -26,7 +17,7 @@ def root():
 
 
 @app.route('/<path:path>')
-def send_report(path):
+def serve_static(path):
     print(path)
     return send_from_directory('../site', path)
 
@@ -47,6 +38,11 @@ def guess_word():
     else:
         if word in w2v:
             rank = w2v.rank(target, word)
+
+    timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
+    logger.info('%s <game id>:%s <word>:%s <rank>:%s <total words>:%s', timestamp, game_id, word, rank,
+                total_words)
+
     return json.dumps({'rank': rank, 'word': word, 'total_words': total_words, 'top_words': top_words}, ensure_ascii=False)
 
 
