@@ -1,12 +1,19 @@
 import sys
 import json
 import hashlib
+import logging
 import numpy as np
 from flask import Flask, request, send_from_directory, redirect
 from waitress import serve
 from gensim.models import KeyedVectors
 
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)
+
+
+@app.before_request
+def log_request():
+    app.logger.info('=== Headers: %s Body: %s', request.headers, request.get_data())
 
 
 @app.route('/')
