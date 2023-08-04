@@ -40,8 +40,8 @@ def guess_word():
             rank = w2v.rank(target, word)
 
     timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
-    logger.info('%s <game id>:%s <word>:%s <rank>:%s <total words>:%s <top words>:%s', timestamp, game_id, word, rank,
-                total_words, top_words)
+    logger.info('%s <ip>:%s <game id>:%s <word>:%s <rank>:%s <total words>:%s <top words>:%s', timestamp,
+                request.remote_addr, game_id, word, rank, total_words, top_words)
 
     return json.dumps({'rank': rank, 'word': word, 'total_words': total_words, 'top_words': top_words}, ensure_ascii=False)
 
