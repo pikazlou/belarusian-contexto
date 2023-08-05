@@ -33,7 +33,7 @@ function guess_response(data) {
     top_words = data['top_words']
     total_words = data['total_words']
 
-    if (rank >= 0) {
+    if (rank >= 1) {
         same_word = guessed_words.find(function(elem) { return elem.word == word; });
         word_exists = typeof same_word !== 'undefined';
         if (!word_exists) {
@@ -44,7 +44,7 @@ function guess_response(data) {
         if (word_exists) {
             $("#status").text("Слова ўжо было");
         }
-        if (rank == 0) {
+        if (rank == 1) {
             $("#status").html("Віншуем! Сакрэтнае слова <b>" + word + "</b>");
         }
     } else {
@@ -64,11 +64,11 @@ function render_guessed_rows(total_words, current_word) {
 
 function render_guessed_row(word, rank, total_words, highlighted) {
     var max = Math.pow(Math.log(total_words), 2)
-    var current = Math.pow(Math.log(rank + 1), 2)
+    var current = Math.pow(Math.log(rank), 2)
     var percent = 100.0 * (1.0 - current / max);
 
     var progress_color = '#dd8888'
-    if (rank == 0) {
+    if (rank == 1) {
         progress_color = '#bbffbb'
     } else if (percent > 50.0) {
         progress_color = '#aaddaa'

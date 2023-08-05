@@ -33,11 +33,11 @@ def guess_word():
     total_words = len(w2v.index_to_key)
     target = get_target_word(game_id)
     if word == target:
-        rank = 0
+        rank = 1
         top_words = [w for w, _ in w2v.most_similar(target, topn=50)]
     else:
         if word in w2v:
-            rank = w2v.rank(target, word)
+            rank = w2v.rank(target, word) + 1
 
     timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
     logger.info('%s <ip>:%s <game id>:%s <word>:%s <rank>:%s <total words>:%s <top words>:%s', timestamp,
@@ -64,6 +64,7 @@ def hint():
         else:
             hint_rank = rank
             hint_word = word
+        hint_rank += 1
     return json.dumps({'rank': hint_rank, 'word': hint_word, 'total_words': total_words, 'top_words': []}, ensure_ascii=False)
 
 
