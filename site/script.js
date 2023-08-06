@@ -11,6 +11,36 @@ $(document).ready(function(){
             $('#answer').val('');
          }
     });
+
+    $('.menu-btn').click(function(){
+        $('.menu').css('visibility', 'visible');
+        $('#menu-bg').css('visibility', 'visible');
+        $('.menu-btn').addClass('menu-btn-selected');
+    });
+
+    $('#menu-bg').click(function(){
+        $('.menu').css('visibility', 'hidden');
+        $('#menu-bg').css('visibility', 'hidden');
+        $('.menu-btn').removeClass('menu-btn-selected');
+    });
+
+    $('#menu-item-how-to-play').click(function(){
+        $('.menu').css('visibility', 'hidden');
+        $('#menu-bg').css('visibility', 'hidden');
+        $('.menu-btn').removeClass('menu-btn-selected');
+
+        let clone = $($("#how-to-play-template").html());
+        $('.modal').html(clone.html());
+        $('.modal-bg').css('visibility', 'visible');
+    });
+
+    $('.modal-bg').click(function(){
+        $('.modal-bg').css('visibility', 'hidden');
+    });
+
+    $(".modal").click(function(e) {
+        e.stopPropagation();
+   });
 });
 
 function submit_answer(game_id, answer) {
