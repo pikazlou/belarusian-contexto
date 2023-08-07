@@ -84,10 +84,14 @@ function set_game_id(game_id) {
             var answer = $(this).val().toLowerCase();
             submit_answer(game_id, answer);
             $('#answer').val('');
+            $('.how-to-play-block').remove();
          }
     });
 
     $("#status").empty();
+
+    let how_to_play = $($("#how-to-play-template").html());
+    $("#wraper").append(how_to_play);
 }
 
 function submit_answer(game_id, answer) {
