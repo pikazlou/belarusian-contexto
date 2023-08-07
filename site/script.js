@@ -2,15 +2,7 @@ $(document).ready(function(){
     var today = new Date();
     var game_id = today.toISOString().slice(0, 10)
 
-    $('#game_id').text("Код гульні: " + game_id)
-
-    $('#answer').on('keypress', function (e) {
-         if(e.which === 13){
-            var answer = $(this).val().toLowerCase();
-            submit_answer(game_id, answer);
-            $('#answer').val('');
-         }
-    });
+    set_game_id(game_id);
 
     $('.menu-btn').click(function(){
         $('.menu').css('visibility', 'visible');
@@ -24,24 +16,52 @@ $(document).ready(function(){
         $('.menu-btn').removeClass('menu-btn-selected');
     });
 
+    $('.modal-bg').click(function(){
+        $('.modal-bg').css('visibility', 'hidden');
+    });
+
     $('#menu-item-how-to-play').click(function(){
         $('.menu').css('visibility', 'hidden');
         $('#menu-bg').css('visibility', 'hidden');
         $('.menu-btn').removeClass('menu-btn-selected');
 
         let clone = $($("#how-to-play-template").html());
-        $('.modal').html(clone.html());
+        $('.modal').html(clone);
         $('.modal-bg').css('visibility', 'visible');
     });
 
-    $('.modal-bg').click(function(){
-        $('.modal-bg').css('visibility', 'hidden');
+    $('#menu-item-another-game').click(function(){
+        $('.menu').css('visibility', 'hidden');
+        $('#menu-bg').css('visibility', 'hidden');
+        $('.menu-btn').removeClass('menu-btn-selected');
+
+        let clone = $($("#another-game-template").html());
+        $('.modal').html(clone);
+        $('.modal-bg').css('visibility', 'visible');
+
+        $('.specific_game_button').click(function(){
+            var game_id = $(this).text();
+            set_game_id(game_id);
+            guessed_words = [];
+            $('.guessed_row').remove();
+        });
+    });
+});
+
+function set_game_id(game_id) {
+    $('#game_id').text("Код гульні: " + game_id)
+
+    $('#answer').unbind("keypress");
+    $('#answer').on('keypress', function (e) {
+         if(e.which === 13){
+            var answer = $(this).val().toLowerCase();
+            submit_answer(game_id, answer);
+            $('#answer').val('');
+         }
     });
 
-    $(".modal").click(function(e) {
-        e.stopPropagation();
-   });
-});
+    $("#status").empty();
+}
 
 function submit_answer(game_id, answer) {
     $("#status").text("Чакаем...");
