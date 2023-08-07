@@ -18,6 +18,7 @@ $(document).ready(function(){
 
     $('.modal-bg').click(function(){
         $('.modal-bg').css('visibility', 'hidden');
+        $('.modal').empty();
     });
 
     $('#menu-item-how-to-play').click(function(){
@@ -35,18 +36,44 @@ $(document).ready(function(){
         $('#menu-bg').css('visibility', 'hidden');
         $('.menu-btn').removeClass('menu-btn-selected');
 
-        let clone = $($("#another-game-template").html());
-        $('.modal').html(clone);
+        append_game_id_to_list_of_games('Выпадковая', random_game_id());
+
+        let currentDate = new Date();
+        let game_id = currentDate.toISOString().slice(0, 10);
+        append_game_id_to_list_of_games(game_id + ' (сёння)', game_id);
+        while (game_id != '2023-08-01') {
+            currentDate.setDate(currentDate.getDate() - 1);
+            game_id = currentDate.toISOString().slice(0, 10);
+            append_game_id_to_list_of_games(game_id, game_id);
+        }
+
         $('.modal-bg').css('visibility', 'visible');
 
         $('.specific_game_button').click(function(){
-            var game_id = $(this).text();
+            var game_id = $(this).data('game_id');
             set_game_id(game_id);
             guessed_words = [];
             $('.guessed_row').remove();
         });
     });
 });
+
+function random_game_id() {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var length = 5;
+    var result = '';
+    for (i = 0; i < length; i++) {
+        result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return result;
+}
+
+function append_game_id_to_list_of_games(caption, game_id) {
+    let specific_game_button = $($("#another-game-template").html()).filter('.specific_game_button').clone();
+    specific_game_button.text(caption);
+    specific_game_button.data('game_id', game_id);
+    $('.modal').append(specific_game_button);
+}
 
 function set_game_id(game_id) {
     $('#game_id').text("Код гульні: " + game_id)
