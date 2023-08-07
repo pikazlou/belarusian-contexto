@@ -147,9 +147,9 @@ function render_guessed_row(word, rank, total_words, highlighted) {
     var progress_color = '#dd8888'
     if (rank == 1) {
         progress_color = '#bbffbb'
-    } else if (percent > 50.0) {
+    } else if (percent > 66.0) {
         progress_color = '#aaddaa'
-    } else if (percent > 25.0) {
+    } else if (percent > 33.0) {
         progress_color = '#eecc66'
     }
 
