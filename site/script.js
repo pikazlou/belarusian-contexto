@@ -122,7 +122,7 @@ function guess_response(data) {
             $("#status").text("Слова ўжо было");
         }
         if (rank == 1) {
-            $("#status").html("Віншуем! Сакрэтнае слова <b>" + word + "</b>");
+            $("#status").html("Віншуем! Сакрэтнае слова: <b>" + word + "</b>");
         }
     } else {
         $("#status").text("Невядомае слова");
