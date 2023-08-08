@@ -74,7 +74,7 @@ def get_game_id_and_word():
         return '', ''
 
     game_id = str(body['game_id'])
-    word = str(body['word'])
+    word = str(body['word']).replace("’", "'")
     return game_id, word
 
 
