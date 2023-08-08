@@ -90,6 +90,8 @@ function set_game_id(game_id) {
 
     $("#status").empty();
 
+    $('#wraper .how-to-play-block').remove();
+
     let how_to_play = $($("#how-to-play-template").html());
     $("#wraper").append(how_to_play);
 }
