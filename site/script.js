@@ -56,6 +56,12 @@ $(document).ready(function(){
             $('.guessed_row').remove();
         });
     });
+
+    $('#menu-item-about').click(function(){
+        let clone = $($("#about-template").html());
+        $('.modal').html(clone);
+        $('.modal-bg').css('visibility', 'visible');
+    });
 });
 
 function random_game_id() {
