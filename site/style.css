@@ -56,7 +56,33 @@ body {
     background-color: #f4ede2;
 }
 
-#answer {
+.about-section {
+    border-bottom: 1px solid #cccccc;
+    padding: 10px 0;
+}
+
+.about-section:last-child {
+    border-bottom: none;
+}
+
+.about-question-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 1.2em;
+}
+
+.about-question-row svg {
+    margin: 0 10px;
+}
+
+.about-answer {
+    padding: 10px 0;
+    display: none;
+}
+
+#user-input {
     height: 2em;
     width: 100%;
     border-radius: 5px;

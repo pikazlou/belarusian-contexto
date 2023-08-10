@@ -17,8 +17,11 @@ $(document).ready(function(){
     });
 
     $('.modal-bg').click(function(){
-        $('.modal-bg').css('visibility', 'hidden');
-        $('.modal').empty();
+        hide_modal();
+    });
+
+    $(".modal").click(function(e) {
+        e.stopPropagation();
     });
 
     $('#menu-item-how-to-play').click(function(){
@@ -54,15 +57,37 @@ $(document).ready(function(){
             set_game_id(game_id);
             guessed_words = [];
             $('.guessed_row').remove();
+            hide_modal();
         });
     });
 
     $('#menu-item-about').click(function(){
-        let clone = $($("#about-template").html());
-        $('.modal').html(clone);
+        $('.menu').css('visibility', 'hidden');
+        $('#menu-bg').css('visibility', 'hidden');
+        $('.menu-btn').removeClass('menu-btn-selected');
+
+        let section_template = $('#about-section-template').html();
+        $('.faq').each(function() {
+            let question = $(this).find('.faq-question').html();
+            let answer = $(this).find('.faq-answer').html();
+            let resolved = section_template.replace('{question}', question).replace('{answer}', answer);
+            $('.modal').append($(resolved));
+        });
+
         $('.modal-bg').css('visibility', 'visible');
+
+        $('.about-question-row').click(function(){
+            let current_answer = $(this).parent().find('.about-answer');
+            $('.about-answer').not(current_answer).slideUp(200);
+            current_answer.slideDown(200);
+        });
     });
 });
+
+function hide_modal() {
+    $('.modal-bg').css('visibility', 'hidden');
+    $('.modal').empty();
+}
 
 function random_game_id() {
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -84,12 +109,12 @@ function append_game_id_to_list_of_games(caption, game_id) {
 function set_game_id(game_id) {
     $('#game_id').text("Код гульні: " + game_id)
 
-    $('#answer').unbind("keypress");
-    $('#answer').on('keypress', function (e) {
+    $('#user-input').unbind("keypress");
+    $('#user-input').on('keypress', function (e) {
          if(e.which === 13){
-            var answer = $(this).val().toLowerCase();
-            submit_answer(game_id, answer);
-            $('#answer').val('');
+            var input = $(this).val().toLowerCase();
+            submit_input(game_id, input);
+            $('#user-input').val('');
             $('.how-to-play-block').remove();
          }
     });
@@ -102,13 +127,13 @@ function set_game_id(game_id) {
     $("#wraper").append(how_to_play);
 }
 
-function submit_answer(game_id, answer) {
+function submit_input(game_id, input) {
     $("#status").text("Чакаем...");
 
     $.ajax({
         type: 'POST',
         url: '/guess',
-        data: JSON.stringify ({game_id: game_id, word: answer}),
+        data: JSON.stringify ({game_id: game_id, word: input}),
         success: guess_response,
         contentType: "application/json",
         dataType: 'json'
