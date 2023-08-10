@@ -66,13 +66,17 @@ $(document).ready(function(){
         $('#menu-bg').css('visibility', 'hidden');
         $('.menu-btn').removeClass('menu-btn-selected');
 
+        let sections_html = ''
         let section_template = $('#about-section-template').html();
         $('.faq').each(function() {
             let question = $(this).find('.faq-question').html();
             let answer = $(this).find('.faq-answer').html();
             let resolved = section_template.replace('{question}', question).replace('{answer}', answer);
-            $('.modal').append($(resolved));
+            sections_html += resolved;
         });
+        let block_template = $('#about-block-template').html();
+        let block_resolved = block_template.replace('{sections}', sections_html);
+        $('.modal').append($(block_resolved));
 
         $('.modal-bg').css('visibility', 'visible');
 
