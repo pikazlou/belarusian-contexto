@@ -66,7 +66,7 @@ $(document).ready(function(){
             let game_id = $(this).data('game_id');
             set_game_id(game_id);
             guessed_words = [];
-            $('.guessed_row').remove();
+            $('#guessed_words').empty();
             hide_modal();
         });
     });
@@ -93,6 +93,19 @@ $(document).ready(function(){
             $('.about-answer').not(current_answer).slideUp(200);
             current_answer.slideDown(200);
         });
+    });
+
+    $('#closest_words_btn').click(function(){
+        if (top_words.length > 0) {
+            let wrapper = $('<div style="width: 300px">');
+            for (var i = 0; i < top_words.length; i++) {
+                top_word = top_words[i];
+                row = render_word_row(top_word, i + 2, total_words, false);
+                wrapper.append(row);
+            }
+            $('.modal').html(wrapper);
+            $('.modal-bg').css('visibility', 'visible');
+        }
     });
 });
 
@@ -176,11 +189,15 @@ function get_hint() {
 }
 
 var guessed_words = []
+var top_words = [];
+var total_words = 1;
 function guess_response(data) {
     rank = data['rank']
     word = data['word']
-    top_words = data['top_words']
-    total_words = data['total_words']
+    if (top_words.length == 0) {
+        top_words = data['top_words']
+        total_words = data['total_words']
+    }
 
     if (rank >= 1) {
         same_word = guessed_words.find(function(elem) { return elem.word == word; });
@@ -194,7 +211,7 @@ function guess_response(data) {
             $("#status").text("Слова ўжо было");
         }
         if (rank == 1) {
-            $("#status").html("Віншуем! Сакрэтнае слова: <b>" + word + "</b>");
+            $('#win_block').show();
         }
     } else {
         $("#status").text("Невядомае слова");
@@ -202,16 +219,20 @@ function guess_response(data) {
 }
 
 function render_guessed_rows(total_words, current_word) {
-    $('.guessed_row').remove();
+    $('#guessed_words').empty();
 
     for (var i = 0; i < guessed_words.length; i++) {
         guessed_word = guessed_words[i]
         highlighted = guessed_word.word == current_word
-        render_guessed_row(guessed_word.word, guessed_word.rank, total_words, highlighted);
+        row = render_word_row(guessed_word.word, guessed_word.rank, total_words, highlighted);
+        if (highlighted) {
+            $("#status").html(row.clone());
+        }
+        $("#guessed_words").append(row);
     }
 }
 
-function render_guessed_row(word, rank, total_words, highlighted) {
+function render_word_row(word, rank, total_words, highlighted) {
     var max = Math.pow(Math.log(total_words), 2)
     var current = Math.pow(Math.log(rank), 2)
     var percent = 100.0 * (1.0 - current / max);
@@ -232,7 +253,6 @@ function render_guessed_row(word, rank, total_words, highlighted) {
     $(".progress_bar", clone).css("background-color", progress_color);
     if (highlighted) {
         $(".guessed_row", clone).css("border", "3px solid black");
-        $("#status").html(clone.clone());
     }
-    $("#guessed_template").before(clone);
+    return clone;
 }

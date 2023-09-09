@@ -34,7 +34,7 @@ def guess_word():
     target = get_target_word(game_id)
     if word == target:
         rank = 1
-        top_words = [w for w, _ in w2v.most_similar(target, topn=50)]
+        top_words = [w for w, _ in w2v.most_similar(target, topn=49)]
     else:
         if word in w2v:
             rank = w2v.rank(target, word) + 1
