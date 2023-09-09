@@ -99,7 +99,7 @@ if __name__ == "__main__":
         print('expected CLI paramater - path to word2vec vectors file')
         sys.exit(1)
     w2v = KeyedVectors.load_word2vec_format(sys.argv[1])
-    handler = RotatingFileHandler('app.log', maxBytes=100000, backupCount=3)
+    handler = RotatingFileHandler('app.log', maxBytes=100000, backupCount=20)
     logger = logging.getLogger('tdm')
     logger.setLevel(logging.INFO)
     logger.addHandler(handler)
