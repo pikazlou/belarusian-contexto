@@ -1,8 +1,16 @@
 $(document).ready(function(){
     var today = new Date();
-    var game_id = today.toISOString().slice(0, 10)
+    set_game_id(today.toISOString().slice(0, 10));
 
-    set_game_id(game_id);
+    $('#user-input').unbind("keypress");
+    $('#user-input').on('keypress', function (e) {
+         if(e.which === 13){
+            var input = $(this).val().toLowerCase();
+            submit_input(input);
+            $('#user-input').val('');
+            $('.how-to-play-block').remove();
+         }
+    });
 
     $('.menu-btn').click(function(){
         $('.menu').css('visibility', 'visible');
@@ -25,19 +33,21 @@ $(document).ready(function(){
     });
 
     $('#menu-item-how-to-play').click(function(){
-        $('.menu').css('visibility', 'hidden');
-        $('#menu-bg').css('visibility', 'hidden');
-        $('.menu-btn').removeClass('menu-btn-selected');
+        deselect_menu();
 
         let clone = $($("#how-to-play-template").html());
         $('.modal').html(clone);
         $('.modal-bg').css('visibility', 'visible');
     });
 
+    $('#menu-item-hint').click(function(){
+        deselect_menu();
+
+        get_hint();
+    });
+
     $('#menu-item-another-game').click(function(){
-        $('.menu').css('visibility', 'hidden');
-        $('#menu-bg').css('visibility', 'hidden');
-        $('.menu-btn').removeClass('menu-btn-selected');
+        deselect_menu();
 
         append_game_id_to_list_of_games('Выпадковая', random_game_id());
 
@@ -53,7 +63,7 @@ $(document).ready(function(){
         $('.modal-bg').css('visibility', 'visible');
 
         $('.specific_game_button').click(function(){
-            var game_id = $(this).data('game_id');
+            let game_id = $(this).data('game_id');
             set_game_id(game_id);
             guessed_words = [];
             $('.guessed_row').remove();
@@ -62,9 +72,7 @@ $(document).ready(function(){
     });
 
     $('#menu-item-about').click(function(){
-        $('.menu').css('visibility', 'hidden');
-        $('#menu-bg').css('visibility', 'hidden');
-        $('.menu-btn').removeClass('menu-btn-selected');
+        deselect_menu();
 
         let sections_html = ''
         let section_template = $('#about-section-template').html();
@@ -93,6 +101,12 @@ function hide_modal() {
     $('.modal').empty();
 }
 
+function deselect_menu() {
+    $('.menu').css('visibility', 'hidden');
+    $('#menu-bg').css('visibility', 'hidden');
+    $('.menu-btn').removeClass('menu-btn-selected');
+}
+
 function random_game_id() {
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     var length = 5;
@@ -110,18 +124,15 @@ function append_game_id_to_list_of_games(caption, game_id) {
     $('.modal').append(specific_game_button);
 }
 
-function set_game_id(game_id) {
-    $('#game_id').text("Код гульні: " + game_id)
+var _game_id;
 
-    $('#user-input').unbind("keypress");
-    $('#user-input').on('keypress', function (e) {
-         if(e.which === 13){
-            var input = $(this).val().toLowerCase();
-            submit_input(game_id, input);
-            $('#user-input').val('');
-            $('.how-to-play-block').remove();
-         }
-    });
+function get_game_id() {
+    return _game_id;
+}
+
+function set_game_id(new_game_id) {
+    _game_id = new_game_id;
+    $('#game_id').text("Код гульні: " + _game_id)
 
     $("#status").empty();
 
@@ -131,13 +142,33 @@ function set_game_id(game_id) {
     $("#wraper").append(how_to_play);
 }
 
-function submit_input(game_id, input) {
+function submit_input(input) {
     $("#status").text("Чакаем...");
 
     $.ajax({
         type: 'POST',
         url: '/guess',
-        data: JSON.stringify ({game_id: game_id, word: input}),
+        data: JSON.stringify ({game_id: get_game_id(), word: input}),
+        success: guess_response,
+        contentType: "application/json",
+        dataType: 'json'
+    });
+}
+
+function get_hint() {
+    var highest_word;
+    if (guessed_words.length > 0) {
+        highest_word = guessed_words[0].word;
+    } else {
+        highest_word = '';
+    }
+
+    $("#status").text("Чакаем...");
+
+    $.ajax({
+        type: 'POST',
+        url: '/hint',
+        data: JSON.stringify ({game_id: get_game_id(), word: highest_word}),
         success: guess_response,
         contentType: "application/json",
         dataType: 'json'
