@@ -40,7 +40,7 @@ def guess_word():
             rank = w2v.rank(target, word) + 1
 
     timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
-    logger.info('%s <ip>:%s <game id>:%s <word>:%s <rank>:%s <total words>:%s <top words>:%s', timestamp,
+    logger.info('%s <ip>:%s <game id>:%s <endpoint>:guess <word>:%s <rank>:%s <total words>:%s <top words>:%s', timestamp,
                 request.remote_addr, game_id, word, rank, total_words, top_words)
 
     return json.dumps({'rank': rank, 'word': word, 'total_words': total_words, 'top_words': top_words}, ensure_ascii=False)
@@ -58,6 +58,7 @@ def hint():
         word = w2v.most_similar(negative=target, topn=1)[0][0]
 
     hint_rank = -1
+    rank = -1
     hint_word = ''
     total_words = len(w2v.index_to_key)
     if word in w2v:
@@ -69,6 +70,10 @@ def hint():
             hint_rank = rank
             hint_word = word
         hint_rank += 1
+
+    timestamp = strftime('[%Y-%b-%d %H:%M:%S]')
+    logger.info('%s <ip>:%s <game id>:%s <endpoint>:hint <word>:%s <rank>:%s <hint word>:%s <hint rank>:%s',
+                timestamp, request.remote_addr, game_id, word, rank, hint_word, hint_rank)
     return json.dumps({'rank': hint_rank, 'word': hint_word, 'total_words': total_words, 'top_words': []}, ensure_ascii=False)
 
 
