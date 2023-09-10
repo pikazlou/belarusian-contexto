@@ -116,10 +116,18 @@
     </div>
 
     <div id="win_block">
-        <div class="congrats_msg"><b>Віншуем!</b></div>
-        <div class="congrats_msg">Вы адгадалі слова.</div>
+        <div class="congrats-msg"><b>Віншуем!</b></div>
+        <div class="congrats-msg">Вы адгадалі слова.</div>
         <button id="closest_words_btn">Паглядзець бліжэйшыя словы</button>
     </div>
+    <template id="closest-words-template">
+        <div style="width: 300px; text-align: center">
+            <div class="congrats-msg">Сакрэтнае слова: <b>{secret_word}</b></div>
+            <div class="congrats-msg">Бліжэйшыя словы:</div>
+            <div class="closest-words-container" style="margin-top: 15px">{top_words}</div>
+        </div>
+    </template>
+
     <div id="game_id" style="font-family: Verdana; text-align: left; margin: 5px"></div>
     <div>
          <input id="user-input"/>

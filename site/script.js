@@ -95,13 +95,17 @@ $(document).ready(function(){
 
     $('#closest_words_btn').click(function(){
         if (top_words.length > 0) {
-            let wrapper = $('<div style="width: 300px">');
+            let temp_container = $('<div>');
             for (var i = 0; i < top_words.length; i++) {
                 top_word = top_words[i];
                 row = render_word_row(top_word, i + 2, total_words, false);
-                wrapper.append(row);
+                temp_container.append(row);
             }
-            $('.modal').html(wrapper);
+
+            let section_template = $('#closest-words-template').html();
+            let resolved = section_template.replace('{secret_word}', guessed_words[0].word).replace('{top_words}', temp_container.html());
+
+            $('.modal').html(resolved);
             $('.modal-bg').css('visibility', 'visible');
         }
     });
