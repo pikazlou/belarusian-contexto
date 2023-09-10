@@ -1,6 +1,6 @@
 $(document).ready(function(){
     var today = new Date();
-    set_game_id(today.toISOString().slice(0, 10));
+    reset_game_id(today.toISOString().slice(0, 10));
 
     $('#user-input').unbind("keypress");
     $('#user-input').on('keypress', function (e) {
@@ -64,9 +64,7 @@ $(document).ready(function(){
 
         $('.specific_game_button').click(function(){
             let game_id = $(this).data('game_id');
-            set_game_id(game_id);
-            guessed_words = [];
-            $('#guessed_words').empty();
+            reset_game_id(game_id);
             hide_modal();
         });
     });
@@ -143,11 +141,17 @@ function get_game_id() {
     return _game_id;
 }
 
-function set_game_id(new_game_id) {
+function reset_game_id(new_game_id) {
     _game_id = new_game_id;
     $('#game_id').text("Код гульні: " + _game_id)
 
     $("#status").empty();
+
+    guessed_words = [];
+    $('#guessed_words').empty();
+
+    top_words = [];
+    $('#win_block').hide();
 
     $('#wraper .how-to-play-block').remove();
 
