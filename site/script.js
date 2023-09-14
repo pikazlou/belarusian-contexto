@@ -1,3 +1,8 @@
+var _game_id;
+var _guessed_words = []
+var _top_words = [];
+var _total_words = 1;
+
 $(document).ready(function(){
     var today = new Date();
     reset_game_id(today.toISOString().slice(0, 10));
@@ -94,22 +99,35 @@ $(document).ready(function(){
     });
 
     $('#closest_words_btn').click(function(){
-        if (top_words.length > 0) {
+        if (_top_words.length > 0) {
             let temp_container = $('<div>');
-            for (var i = 0; i < top_words.length; i++) {
-                top_word = top_words[i];
-                row = render_word_row(top_word, i + 2, total_words, false);
+            for (var i = 0; i < _top_words.length; i++) {
+                top_word = _top_words[i];
+                row = render_word_row(top_word, i + 2, _total_words);
                 temp_container.append(row);
             }
 
             let section_template = $('#closest-words-template').html();
-            let resolved = section_template.replace('{secret_word}', guessed_words[0].word).replace('{top_words}', temp_container.html());
+            let resolved = section_template.replace('{secret_word}', _guessed_words[0].word).replace('{top_words}', temp_container.html());
 
             $('.modal').html(resolved);
             $('.modal-bg').css('visibility', 'visible');
         }
     });
 });
+
+function get_state() {
+    let state_str = window.localStorage.getItem('state');
+    if (state_str === null) {
+        return {}
+    } else {
+        return JSON.parse(state_str);
+    }
+}
+
+function set_state(state) {
+    window.localStorage.setItem("state", JSON.stringify(state));
+}
 
 function hide_modal() {
     $('.modal-bg').css('visibility', 'hidden');
@@ -139,8 +157,6 @@ function append_game_id_to_list_of_games(caption, game_id) {
     $('.modal').append(specific_game_button);
 }
 
-var _game_id;
-
 function get_game_id() {
     return _game_id;
 }
@@ -149,18 +165,48 @@ function reset_game_id(new_game_id) {
     _game_id = new_game_id;
     $('#game_id').text("Код гульні: " + _game_id)
 
-    $("#status").empty();
-
-    guessed_words = [];
+    _guessed_words = [];
     $('#guessed_words').empty();
 
-    top_words = [];
     $('#win_block').hide();
 
     $('#wraper .how-to-play-block').remove();
 
-    let how_to_play = $($("#how-to-play-template").html());
-    $("#wraper").append(how_to_play);
+    const [words, _top_words, _total_words] = get_game_state(new_game_id);
+    for (var i = 0; i < words.length; i++) {
+        let word = words[i];
+        add_word(word.word, word.rank, _top_words, _total_words);
+    }
+
+    $("#status").empty();
+
+    if (words.length == 0) {
+        let how_to_play = $($("#how-to-play-template").html());
+        $("#wraper").append(how_to_play);
+    }
+}
+
+function get_game_state(game_id) {
+    let state = get_state();
+    let game_state = state[game_id];
+    if (game_state === undefined) {
+        game_state = {};
+    }
+    let words = game_state['words'];
+    let top_words = game_state['top_words'];
+    let total_words = game_state['total_words'];
+    if (words === undefined || top_words === undefined || total_words === undefined) {
+        words = [];
+        top_words = [];
+        total_words = 1;
+    }
+    return [words, top_words, total_words];
+}
+
+function set_game_state(game_id, words, top_words, total_words) {
+    let state = get_state();
+    state[game_id] = {'words': words, 'top_words': top_words, 'total_words': total_words};
+    set_state(state);
 }
 
 function submit_input(input) {
@@ -178,8 +224,8 @@ function submit_input(input) {
 
 function get_hint() {
     var highest_word;
-    if (guessed_words.length > 0) {
-        highest_word = guessed_words[0].word;
+    if (_guessed_words.length > 0) {
+        highest_word = _guessed_words[0].word;
     } else {
         highest_word = '';
     }
@@ -196,51 +242,60 @@ function get_hint() {
     });
 }
 
-var guessed_words = []
-var top_words = [];
-var total_words = 1;
-function guess_response(data) {
-    rank = data['rank']
-    word = data['word']
-    if (top_words.length == 0) {
-        top_words = data['top_words']
-        total_words = data['total_words']
-    }
 
-    if (rank >= 1) {
-        same_word = guessed_words.find(function(elem) { return elem.word == word; });
+function guess_response(data) {
+    let word = data['word'];
+    let rank = data['rank'];
+    let top_words = data['top_words'];
+    let total_words = data['total_words'];
+
+    $('.guessed_row').removeClass('highlighted_word_row');
+
+    if (rank <= 0) {
+        $("#status").text("Невядомае слова");
+    } else {
+        same_word = _guessed_words.find(function(elem) { return elem.word == word; });
         word_exists = typeof same_word !== 'undefined';
-        if (!word_exists) {
-            guessed_words.push({"word": word, "rank": rank})
-            guessed_words.sort(function(a, b){return a.rank - b.rank});
-        }
-        render_guessed_rows(total_words, word);
         if (word_exists) {
             $("#status").text("Слова ўжо было");
+        } else {
+            add_word(word, rank, top_words, total_words);
+            $('#status').empty();
+            $(".guessed_word:contains(" + word + ")").closest('.guessed_row').parent().clone().appendTo('#status');
         }
-        if (rank == 1) {
-            $('#win_block').show();
-        }
-    } else {
-        $("#status").text("Невядомае слова");
+
+        $(".guessed_word:contains(" + word + ")").closest('.guessed_row').addClass('highlighted_word_row')
+    }
+}
+
+function add_word(word, rank, top_words, total_words) {
+    if (_top_words.length == 0) {
+        _top_words = top_words;
+        _total_words = total_words;
+    }
+
+    same_word = _guessed_words.find(function(elem) { return elem.word == word; });
+    word_exists = typeof same_word !== 'undefined';
+    _guessed_words.push({"word": word, "rank": rank})
+    _guessed_words.sort(function(a, b){return a.rank - b.rank});
+    render_guessed_rows(total_words, word);
+    set_game_state(get_game_id(), _guessed_words, top_words, total_words);
+    if (rank == 1) {
+        $('#win_block').show();
     }
 }
 
 function render_guessed_rows(total_words, current_word) {
     $('#guessed_words').empty();
 
-    for (var i = 0; i < guessed_words.length; i++) {
-        guessed_word = guessed_words[i]
-        highlighted = guessed_word.word == current_word
-        row = render_word_row(guessed_word.word, guessed_word.rank, total_words, highlighted);
-        if (highlighted) {
-            $("#status").html(row.clone());
-        }
+    for (var i = 0; i < _guessed_words.length; i++) {
+        guessed_word = _guessed_words[i]
+        row = render_word_row(guessed_word.word, guessed_word.rank, total_words);
         $("#guessed_words").append(row);
     }
 }
 
-function render_word_row(word, rank, total_words, highlighted) {
+function render_word_row(word, rank, total_words) {
     var max = Math.pow(Math.log(total_words), 2)
     var current = Math.pow(Math.log(rank), 2)
     var percent = 100.0 * (1.0 - current / max);
@@ -259,8 +314,5 @@ function render_word_row(word, rank, total_words, highlighted) {
     $(".guessed_rank", clone).text(rank);
     $(".progress_bar", clone).css("width", percent + '%');
     $(".progress_bar", clone).css("background-color", progress_color);
-    if (highlighted) {
-        $(".guessed_row", clone).css("border", "3px solid black");
-    }
     return clone;
 }

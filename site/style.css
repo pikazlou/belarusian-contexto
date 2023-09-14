@@ -134,3 +134,7 @@ body {
     align-items: center;
     cursor: pointer;
 }
+
+.highlighted_word_row {
+    border: 3px solid black;
+}
