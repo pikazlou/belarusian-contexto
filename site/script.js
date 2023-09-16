@@ -2,6 +2,7 @@ var _game_id;
 var _guessed_words = []
 var _top_words = [];
 var _total_words = 1;
+var _hints_used = 0;
 
 $(document).ready(function(){
     var today = new Date();
@@ -54,15 +55,19 @@ $(document).ready(function(){
     $('#menu-item-another-game').click(function(){
         deselect_menu();
 
-        append_game_id_to_list_of_games('Выпадковая', random_game_id());
+        append_game_id_to_list_of_games('Выпадковая', random_game_id(), 0, false);
+
+        const state = get_state();
 
         let currentDate = new Date();
         let game_id = currentDate.toISOString().slice(0, 10);
-        append_game_id_to_list_of_games(game_id + ' (сёння)', game_id);
-        while (game_id != '2023-08-01') {
+        const [, top_words, , hints_used] = get_game_state_from_state(game_id, state);
+        append_game_id_to_list_of_games(game_id + ' (сёння)', game_id, hints_used, top_words.length > 0);
+        while (game_id != '2023-09-01') {
             currentDate.setDate(currentDate.getDate() - 1);
             game_id = currentDate.toISOString().slice(0, 10);
-            append_game_id_to_list_of_games(game_id, game_id);
+            const [, top_words, , hints_used] = get_game_state_from_state(game_id, state);
+            append_game_id_to_list_of_games(game_id, game_id, hints_used, top_words.length > 0);
         }
 
         $('.modal-bg').css('visibility', 'visible');
@@ -150,11 +155,13 @@ function random_game_id() {
     return result;
 }
 
-function append_game_id_to_list_of_games(caption, game_id) {
-    let specific_game_button = $($("#another-game-template").html()).filter('.specific_game_button').clone();
-    specific_game_button.text(caption);
+function append_game_id_to_list_of_games(caption, game_id, hints_used, game_completed) {
+    let template = $($("#another-game-template").html()).clone();
+    let specific_game_button = template.filter('.specific_game_button');
+    $('.another_game_caption', template).text(caption);
+    $('.hints_used', template).text(hints_used);
     specific_game_button.data('game_id', game_id);
-    $('.modal').append(specific_game_button);
+    $('.modal').append(template);
 }
 
 function get_game_id() {
@@ -172,7 +179,10 @@ function reset_game_id(new_game_id) {
 
     $('#wraper .how-to-play-block').remove();
 
-    const [words, _top_words, _total_words] = get_game_state(new_game_id);
+    const [words, top_words, total_words, hints_used] = get_game_state(new_game_id);
+    _top_words = top_words;
+    _total_words = total_words;
+    _hints_used = hints_used;
     for (var i = 0; i < words.length; i++) {
         let word = words[i];
         add_word(word.word, word.rank, _top_words, _total_words);
@@ -188,6 +198,10 @@ function reset_game_id(new_game_id) {
 
 function get_game_state(game_id) {
     let state = get_state();
+    return get_game_state_from_state(game_id, state);
+}
+
+function get_game_state_from_state(game_id, state) {
     let game_state = state[game_id];
     if (game_state === undefined) {
         game_state = {};
@@ -195,17 +209,21 @@ function get_game_state(game_id) {
     let words = game_state['words'];
     let top_words = game_state['top_words'];
     let total_words = game_state['total_words'];
+    let hints_used = game_state['hints_used'];
     if (words === undefined || top_words === undefined || total_words === undefined) {
         words = [];
         top_words = [];
         total_words = 1;
     }
-    return [words, top_words, total_words];
+    if (hints_used === undefined) {
+        hints_used = 0;
+    }
+    return [words, top_words, total_words, hints_used];
 }
 
-function set_game_state(game_id, words, top_words, total_words) {
+function set_game_state(game_id, words, top_words, total_words, hints_used) {
     let state = get_state();
-    state[game_id] = {'words': words, 'top_words': top_words, 'total_words': total_words};
+    state[game_id] = {'words': words, 'top_words': top_words, 'total_words': total_words, 'hints_used': hints_used};
     set_state(state);
 }
 
@@ -229,6 +247,7 @@ function get_hint() {
     } else {
         highest_word = '';
     }
+    _hints_used += 1;
 
     $("#status").text("Чакаем...");
 
@@ -261,10 +280,10 @@ function guess_response(data) {
         } else {
             add_word(word, rank, top_words, total_words);
             $('#status').empty();
-            $(".guessed_word:contains(" + word + ")").closest('.guessed_row').parent().clone().appendTo('#status');
+            $(".guessed_word").filter(function() {return $(this).text() === word;}).closest('.guessed_row').parent().clone().appendTo('#status');
         }
 
-        $(".guessed_word:contains(" + word + ")").closest('.guessed_row').addClass('highlighted_word_row')
+        $(".guessed_word").filter(function() {return $(this).text() === word;}).closest('.guessed_row').addClass('highlighted_word_row')
     }
 }
 
@@ -279,7 +298,7 @@ function add_word(word, rank, top_words, total_words) {
     _guessed_words.push({"word": word, "rank": rank})
     _guessed_words.sort(function(a, b){return a.rank - b.rank});
     render_guessed_rows(total_words, word);
-    set_game_state(get_game_id(), _guessed_words, top_words, total_words);
+    set_game_state(get_game_id(), _guessed_words, _top_words, _total_words, _hints_used);
     if (rank == 1) {
         $('#win_block').show();
     }
