@@ -15,7 +15,7 @@
             <button class="menu-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path></svg></button>
             <div id="menu-bg" style="visibility: hidden; z-index: 1000; position: fixed; left: 0; top: 0; height: 100vh; width: 100vw;"></div>
             <div class="menu" style="visibility: hidden; z-index: 1001; position: absolute; right: 0; padding: 10px; background-color: white">
-                <button id="menu-item-how-to-play" class="menu-item">
+                <button id="menu-item-how-to-play" class="menu-item main-menu-item">
                     <svg width="18px" height="18px" viewBox="40 40 430 430" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <title>question</title>
                         <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -26,7 +26,7 @@
                     </svg>
                     Як гуляць
                 </button>
-                <button id="menu-item-hint" class="menu-item">
+                <button id="menu-item-hint" class="menu-item main-menu-item">
                     <svg fill="#000000" height="18px" width="18px" viewBox="0 0 66 66" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
                     <g>
                         <path d="M33.265,0.002L33.191,0l-0.074,0.002C21.841,0.28,9.704,7.697,9.704,23.324c0,8.91,5.177,14.091,8.957,17.875
@@ -41,7 +41,7 @@
                     </svg>
                     Падказка
                 </button>
-                <button id="menu-item-another-game" class="menu-item">
+                <button id="menu-item-another-game" class="menu-item main-menu-item">
                     <svg width="18px" height="18px" viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="4" y="4" width="16" height="16" rx="3" stroke="#000000" stroke-width="2"/>
                         <path d="M16 10L8 10" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
@@ -49,7 +49,7 @@
                     </svg>
                     Іншая гульня
                 </button>
-                <button id="menu-item-about" class="menu-item">
+                <button id="menu-item-about" class="menu-item main-menu-item">
                     <svg width="18px" height="18px" viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#292929" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><rect height="0.01" stroke="#292929" stroke-linejoin="round" stroke-width="3" width="0.01" x="12" y="8"/><path d="M12 12V16" stroke="#292929" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
                     Пра праект
                 </button>
@@ -79,21 +79,33 @@
 
     <template id="another-game-template">
         <button class="menu-item specific_game_button" style="justify-content: space-between">
-            <div class="another_game_caption" style="margin-right: 20px"></div>
-            <div style="display: flex; align-items: center">
-                <svg fill="#000000" height="18px" width="18px" viewBox="0 0 66 66" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
-                <g>
-                    <path d="M33.265,0.002L33.191,0l-0.074,0.002C21.841,0.28,9.704,7.697,9.704,23.324c0,8.91,5.177,14.091,8.957,17.875
-                        c1.317,1.317,3.121,3.123,3.191,3.893l0.25,2.727h22.18l0.249-2.727c0.07-0.77,1.874-2.575,3.191-3.893
-                        c3.78-3.784,8.957-8.965,8.957-17.875C56.68,7.698,44.542,0.281,33.265,0.002z M43.479,36.958c-1.661,1.662-3.171,3.173-4.075,4.86
-                        H26.979c-0.904-1.688-2.414-3.198-4.074-4.86c-3.375-3.379-7.202-7.208-7.202-13.634c0-11.635,8.771-17.078,17.489-17.322
-                        c8.717,0.245,17.487,5.687,17.487,17.322C50.68,29.75,46.854,33.58,43.479,36.958z"/>
-                    <path d="M21.192,53.835c0,6.919,5.383,12.548,12,12.548c6.617,0,12-5.629,12-12.548v-3h-24
-                        C21.192,50.835,21.192,53.835,21.192,53.835z M38.524,56.835c-0.998,2.105-3.014,3.548-5.332,3.548s-4.334-1.442-5.333-3.548
-                        H38.524z"/>
-                </g>
+            <div class="another_game_caption" style="min-width: 200px"></div>
+            <div class="game_stats" style="display: flex; align-items: center">
+                <svg class="game-in-progress" style="display: none; margin-left: 30px; margin-right: 15px" fill="#000000" width="18px" height="18px" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:none;}</style></defs><title>Гульня не скончана</title><path d="M16,2A14,14,0,1,0,30,16,14.0158,14.0158,0,0,0,16,2Zm0,26A12,12,0,0,1,16,4V16l8.4812,8.4814A11.9625,11.9625,0,0,1,16,28Z"/><rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/></svg>
+                <svg class="game-completed" style="display: none; margin-left: 30px; margin-right: 15px" width="18px" height="18px" viewBox="0 -1.5 11 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <title>Слова адгадана</title>
+                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Dribbble-Light-Preview" transform="translate(-304.000000, -366.000000)" fill="#000000">
+                            <g id="icons" transform="translate(56.000000, 160.000000)">
+                                <polygon id="done_mini-[#1484]" points="259 207.6 252.2317 214 252.2306 213.999 252.2306 214 248 210 249.6918 208.4 252.2306 210.8 257.3082 206"></polygon>
+                            </g>
+                        </g>
+                    </g>
                 </svg>
-                <div class="hints_used"></div>
+                <svg class="hints-used" style="display: none; margin-right: 5px" fill="#000000" height="18px" width="18px" viewBox="0 0 66 66" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
+                    <title>Падказак выкарыстана</title>
+                    <g>
+                        <path d="M33.265,0.002L33.191,0l-0.074,0.002C21.841,0.28,9.704,7.697,9.704,23.324c0,8.91,5.177,14.091,8.957,17.875
+                            c1.317,1.317,3.121,3.123,3.191,3.893l0.25,2.727h22.18l0.249-2.727c0.07-0.77,1.874-2.575,3.191-3.893
+                            c3.78-3.784,8.957-8.965,8.957-17.875C56.68,7.698,44.542,0.281,33.265,0.002z M43.479,36.958c-1.661,1.662-3.171,3.173-4.075,4.86
+                            H26.979c-0.904-1.688-2.414-3.198-4.074-4.86c-3.375-3.379-7.202-7.208-7.202-13.634c0-11.635,8.771-17.078,17.489-17.322
+                            c8.717,0.245,17.487,5.687,17.487,17.322C50.68,29.75,46.854,33.58,43.479,36.958z"/>
+                        <path d="M21.192,53.835c0,6.919,5.383,12.548,12,12.548c6.617,0,12-5.629,12-12.548v-3h-24
+                            C21.192,50.835,21.192,53.835,21.192,53.835z M38.524,56.835c-0.998,2.105-3.014,3.548-5.332,3.548s-4.334-1.442-5.333-3.548
+                            H38.524z"/>
+                    </g>
+                </svg>
+                <div class="hints-used-number" style="display: none"></div>
             </div>
         </button>
     </template>

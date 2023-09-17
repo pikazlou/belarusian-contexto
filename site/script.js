@@ -55,19 +55,19 @@ $(document).ready(function(){
     $('#menu-item-another-game').click(function(){
         deselect_menu();
 
-        append_game_id_to_list_of_games('Выпадковая', random_game_id(), 0, false);
+        append_game_id_to_list_of_games('Выпадковая', random_game_id(), 0, false, false);
 
         const state = get_state();
 
         let currentDate = new Date();
         let game_id = currentDate.toISOString().slice(0, 10);
-        const [, top_words, , hints_used] = get_game_state_from_state(game_id, state);
-        append_game_id_to_list_of_games(game_id + ' (сёння)', game_id, hints_used, top_words.length > 0);
+        const [words, top_words, , hints_used] = get_game_state_from_state(game_id, state);
+        append_game_id_to_list_of_games(game_id + ' (сёння)', game_id, hints_used, words.length > 0, top_words.length > 0);
         while (game_id != '2023-09-01') {
             currentDate.setDate(currentDate.getDate() - 1);
             game_id = currentDate.toISOString().slice(0, 10);
-            const [, top_words, , hints_used] = get_game_state_from_state(game_id, state);
-            append_game_id_to_list_of_games(game_id, game_id, hints_used, top_words.length > 0);
+            const [words, top_words, , hints_used] = get_game_state_from_state(game_id, state);
+            append_game_id_to_list_of_games(game_id, game_id, hints_used, words.length > 0, top_words.length > 0);
         }
 
         $('.modal-bg').css('visibility', 'visible');
@@ -155,12 +155,23 @@ function random_game_id() {
     return result;
 }
 
-function append_game_id_to_list_of_games(caption, game_id, hints_used, game_completed) {
+function append_game_id_to_list_of_games(caption, game_id, hints_used, game_started, game_completed) {
     let template = $($("#another-game-template").html()).clone();
     let specific_game_button = template.filter('.specific_game_button');
     $('.another_game_caption', template).text(caption);
-    $('.hints_used', template).text(hints_used);
     specific_game_button.data('game_id', game_id);
+
+    if (game_started) {
+        if (game_completed) {
+            $('.game-completed', template).show();
+        } else {
+            $('.game-in-progress', template).show();
+        }
+        $('.hints-used', template).show();
+        $('.hints-used-number', template).show();
+    }
+
+    $('.hints-used-number', template).text(hints_used);
     $('.modal').append(template);
 }
 
