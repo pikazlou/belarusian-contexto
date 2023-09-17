@@ -235,6 +235,7 @@ function get_game_state_from_state(game_id, state) {
 function set_game_state(game_id, words, top_words, total_words, hints_used) {
     let state = get_state();
     state[game_id] = {'words': words, 'top_words': top_words, 'total_words': total_words, 'hints_used': hints_used};
+    state['version'] = '1';
     set_state(state);
 }
 
