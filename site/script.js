@@ -62,7 +62,7 @@ $(document).ready(function(){
         let currentDate = new Date();
         let game_id = currentDate.toISOString().slice(0, 10);
         const [words, top_words, , hints_used] = get_game_state_from_state(game_id, state);
-        append_game_id_to_list_of_games(game_id + ' (сёння)', game_id, hints_used, words.length > 0, top_words.length > 0);
+        append_game_id_to_list_of_games('Cённяшняя', game_id, hints_used, words.length > 0, top_words.length > 0);
         while (game_id != '2023-09-01') {
             currentDate.setDate(currentDate.getDate() - 1);
             game_id = currentDate.toISOString().slice(0, 10);
